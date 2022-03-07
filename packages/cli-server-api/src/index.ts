@@ -5,7 +5,7 @@ import connect from 'connect';
 import errorhandler from 'errorhandler';
 import nocache from 'nocache';
 import serveStatic from 'serve-static';
-import {debuggerUIMiddleware} from '@react-native-community/cli-debugger-ui';
+import {debuggerUIMiddleware} from '@exodus/cli-debugger-ui';
 
 import devToolsMiddleware from './devToolsMiddleware';
 import indexPageMiddleware from './indexPageMiddleware';

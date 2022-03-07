@@ -13,7 +13,7 @@ import path from 'path';
 import {
   createDevServerMiddleware,
   indexPageMiddleware,
-} from '@react-native-community/cli-server-api';
+} from '@exodus/cli-server-api';
 import {Config} from '@react-native-community/cli-types';
 
 import loadMetroConfig from '../../tools/loadMetroConfig';

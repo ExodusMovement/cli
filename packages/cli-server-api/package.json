@@ -7,7 +7,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@react-native-community/cli-debugger-ui": "^10.0.0",
+    "@exodus/cli-debugger-ui": "^10.0.0",
     "@react-native-community/cli-tools": "^10.1.1",
     "compression": "^1.7.1",
     "connect": "^3.6.5",
