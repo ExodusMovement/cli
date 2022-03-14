@@ -1,10 +1,5 @@
-import execa from 'execa';
-
-export default function makeHook(command: string) {
+export default function makeHook(_: string) {
+  throw new Error('makeHook disabled by Exodus audit team due to security reasons');
   return () => {
-    const args = command.split(' ');
-    const cmd = args.shift() as string;
-
-    return execa(cmd, args, {stdio: 'inherit'});
   };
 }
