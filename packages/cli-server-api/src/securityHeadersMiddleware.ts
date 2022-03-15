@@ -26,10 +26,12 @@ export default function securityHeadersMiddleware(
     return;
   }
 
-  // Block requests to hosts other than localhost or 10.0.2.2 (EMULATOR_LOCALHOST)
+  // Block requests to domains other than localhost to prevent DNS rebinding
+  // attacks. Accessing directly through an IP address will be fine because
+  // there is no DNS reolution involved.
   if (
     typeof req.headers.host !== 'string' ||
-    !/^(localhost|10\.0\.2\.2):/.test(req.headers.host)
+    !/^(localhost|\d+\.\d+\.\d+\.\d+):/.test(req.headers.host)
   ) {
     return next(new Error('invalid hostname'));
   }
