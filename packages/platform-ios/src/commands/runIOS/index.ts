@@ -40,6 +40,7 @@ type FlagsT = {
   packager: boolean;
   verbose: boolean;
   port: number;
+  binaryPath?: string;
   terminal: string | undefined;
 };
 
@@ -48,6 +49,13 @@ function runIOS(_: Array<string>, ctx: Config, args: FlagsT) {
     throw new CLIError(
       'iOS project folder not found. Are you sure this is a React Native project?',
     );
+  }
+
+  if (args.binaryPath) {
+    args.binaryPath = path.join(ctx.root, args.binaryPath)
+    if (!fs.existsSync(args.binaryPath)) {
+      throw new CLIError('binary-path was specified, but the file was not found.');
+    }
   }
 
   warnAboutManuallyLinkedLibs(ctx);
@@ -192,19 +200,25 @@ async function runOnSimulator(
     bootSimulator(selectedSimulator);
   }
 
-  const buildOutput = await buildProject(
-    xcodeProject,
-    selectedSimulator.udid,
-    scheme,
-    args,
-  );
+  let buildOutput, appPath
+  if (!args.binaryPath) {
+    buildOutput = await buildProject(
+      xcodeProject,
+      selectedSimulator.udid,
+      scheme,
+      args,
+    );
 
-  const appPath = getBuildPath(
-    xcodeProject,
-    args.configuration,
-    buildOutput,
-    scheme,
-  );
+    appPath = getBuildPath(
+      xcodeProject,
+      args.configuration,
+      buildOutput,
+      scheme,
+    );
+  }
+  else {
+    appPath = args.binaryPath
+  }
 
   logger.info(`Installing "${chalk.bold(appPath)}"`);
 
@@ -258,16 +272,29 @@ async function runOnDevice(
     );
   }
 
-  const buildOutput = await buildProject(
-    xcodeProject,
-    selectedDevice.udid,
-    scheme,
-    args,
-  );
+  let buildOutput, appPath
+  if (!args.binaryPath) {
+    buildOutput = await buildProject(
+      xcodeProject,
+      selectedDevice.udid,
+      scheme,
+      args,
+    );
+
+    appPath = getBuildPath(
+      xcodeProject,
+      args.configuration,
+      buildOutput,
+      scheme
+    );
+  }
+  else {
+    appPath = args.binaryPath
+  }
 
   const iosDeployInstallArgs = [
     '--bundle',
-    getBuildPath(xcodeProject, args.configuration, buildOutput, scheme),
+    appPath,
     '--id',
     selectedDevice.udid,
     '--justlaunch',
@@ -606,6 +633,10 @@ export default {
       name: '--port <number>',
       default: process.env.RCT_METRO_PORT || 8081,
       parse: Number,
+    },
+    {
+      name: '--binary-path <string>',
+      description: 'Path relative to project root where pre-built .app binary lives.',
     },
     {
       name: '--terminal <string>',
