@@ -1,11 +1,9 @@
 import execa from 'execa';
 import fs from 'fs';
-import {
-  logger,
-  CLIError,
-} from '@react-native-community/cli-tools';
+import {logger, CLIError} from '@react-native-community/cli-tools';
 
 import adb from './adb';
+import type {AndroidProject, Flags} from './';
 
 function tryInstallAppOnDevice(
   args: Flags,
@@ -19,7 +17,7 @@ function tryInstallAppOnDevice(
     const {appFolder} = args;
     const variant = args.variant.toLowerCase();
 
-    let pathToApk
+    let pathToApk;
     if (!args.binaryPath) {
       const buildDirectory = `${sourceDir}/${appName}/build/outputs/apk/${variant}`;
       const apkFile = getInstallApkName(
@@ -30,8 +28,9 @@ function tryInstallAppOnDevice(
         buildDirectory,
       );
       pathToApk = `${buildDirectory}/${apkFile}`;
+    } else {
+      pathToApk = args.binaryPath;
     }
-    else pathToApk = args.binaryPath
 
     const adbArgs = ['-s', device, 'install', '-r', '-d', pathToApk];
     logger.info(`Installing the app on the device "${device}"...`);

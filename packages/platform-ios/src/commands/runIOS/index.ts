@@ -52,9 +52,11 @@ function runIOS(_: Array<string>, ctx: Config, args: FlagsT) {
   }
 
   if (args.binaryPath) {
-    args.binaryPath = path.join(ctx.root, args.binaryPath)
+    args.binaryPath = path.join(ctx.root, args.binaryPath);
     if (!fs.existsSync(args.binaryPath)) {
-      throw new CLIError('binary-path was specified, but the file was not found.');
+      throw new CLIError(
+        'binary-path was specified, but the file was not found.',
+      );
     }
   }
 
@@ -200,7 +202,7 @@ async function runOnSimulator(
     bootSimulator(selectedSimulator);
   }
 
-  let buildOutput, appPath
+  let buildOutput, appPath;
   if (!args.binaryPath) {
     buildOutput = await buildProject(
       xcodeProject,
@@ -215,9 +217,8 @@ async function runOnSimulator(
       buildOutput,
       scheme,
     );
-  }
-  else {
-    appPath = args.binaryPath
+  } else {
+    appPath = args.binaryPath;
   }
 
   logger.info(`Installing "${chalk.bold(appPath)}"`);
@@ -272,7 +273,7 @@ async function runOnDevice(
     );
   }
 
-  let buildOutput, appPath
+  let buildOutput, appPath;
   if (!args.binaryPath) {
     buildOutput = await buildProject(
       xcodeProject,
@@ -285,11 +286,10 @@ async function runOnDevice(
       xcodeProject,
       args.configuration,
       buildOutput,
-      scheme
+      scheme,
     );
-  }
-  else {
-    appPath = args.binaryPath
+  } else {
+    appPath = args.binaryPath;
   }
 
   const iosDeployInstallArgs = [
@@ -636,7 +636,8 @@ export default {
     },
     {
       name: '--binary-path <string>',
-      description: 'Path relative to project root where pre-built .app binary lives.',
+      description:
+        'Path relative to project root where pre-built .app binary lives.',
     },
     {
       name: '--terminal <string>',
