@@ -14,6 +14,7 @@ import adb from './adb';
 import tryRunAdbReverse from './tryRunAdbReverse';
 import tryLaunchAppOnDevice from './tryLaunchAppOnDevice';
 import tryLaunchEmulator from './tryLaunchEmulator';
+import tryInstallAppOnDevice from './tryInstallAppOnDevice';
 import {Flags} from '.';
 
 function getTaskNames(appName: string, commands: Array<string>): Array<string> {
@@ -53,25 +54,27 @@ async function runOnAllDevices(
   }
 
   try {
-    const tasks = args.tasks || ['install' + toPascalCase(args.variant)];
-    const gradleArgs = getTaskNames(
-      args.appFolder || androidProject.appName,
-      tasks,
-    );
+    if (!args.binaryPath) {
+      const tasks = args.tasks || ['install' + toPascalCase(args.variant)];
+      const gradleArgs = getTaskNames(
+        args.appFolder || androidProject.appName,
+        tasks,
+      );
 
-    if (args.port != null) {
-      gradleArgs.push('-PreactNativeDevServerPort=' + args.port);
+      if (args.port != null) {
+        gradleArgs.push('-PreactNativeDevServerPort=' + args.port);
+      }
+
+      logger.info('Installing the app...');
+      logger.debug(
+        `Running command "cd android && ${cmd} ${gradleArgs.join(' ')}"`,
+      );
+
+      await execa(cmd, gradleArgs, {
+        stdio: ['inherit', 'inherit', 'pipe'],
+        cwd: androidProject.sourceDir,
+      });
     }
-
-    logger.info('Installing the app...');
-    logger.debug(
-      `Running command "cd android && ${cmd} ${gradleArgs.join(' ')}"`,
-    );
-
-    await execa(cmd, gradleArgs, {
-      stdio: ['inherit', 'inherit', 'pipe'],
-      cwd: androidProject.sourceDir,
-    });
   } catch (error) {
     throw createInstallError(error);
   }
@@ -79,6 +82,9 @@ async function runOnAllDevices(
   (devices.length > 0 ? devices : [undefined]).forEach(
     (device: string | void) => {
       tryRunAdbReverse(args.port, device);
+      if (args.binaryPath && device) {
+        tryInstallAppOnDevice(args, adbPath, device, androidProject);
+      }
       tryLaunchAppOnDevice(device, packageName, adbPath, args);
     },
   );

@@ -52,6 +52,7 @@ export interface Flags {
   port: number;
   terminal: string;
   jetifier: boolean;
+  binaryPath?: string;
 }
 
 type AndroidProject = NonNullable<Config['project']['android']>;
@@ -61,6 +62,18 @@ type AndroidProject = NonNullable<Config['project']['android']>;
  */
 async function runAndroid(_argv: Array<string>, config: Config, args: Flags) {
   displayWarnings(config, args);
+
+  if (args.binaryPath) {
+    if (args.tasks) {
+      throw new CLIError('binary-path and tasks were specified, but they are not compatible. Specify only one');
+    }
+
+    args.binaryPath = path.join(config.root, args.binaryPath)
+    if (!fs.existsSync(args.binaryPath)) {
+      throw new CLIError('binary-path was specified, but the file was not found.');
+    }    
+  }
+
   const androidProject = getAndroidProject(config);
 
   if (args.jetifier) {
@@ -134,7 +147,9 @@ function runOnSpecificDevice(
   const {deviceId} = args;
   if (devices.length > 0 && deviceId) {
     if (devices.indexOf(deviceId) !== -1) {
-      buildApk(gradlew, androidProject.sourceDir);
+      if (!args.binaryPath)
+        buildApk(gradlew, androidProject.sourceDir);
+
       installAndLaunchOnDevice(
         args,
         deviceId,
@@ -164,6 +179,8 @@ function buildApk(gradlew: string, sourceDir: string) {
     throw new CLIError('Failed to build the app.', error);
   }
 }
+
+
 
 function installAndLaunchOnDevice(
   args: Flags,
@@ -322,6 +339,10 @@ export default {
       name: '--no-jetifier',
       description:
         'Do not run "jetifier" – the AndroidX transition tool. By default it runs before Gradle to ease working with libraries that don\'t support AndroidX yet. See more at: https://www.npmjs.com/package/jetifier.',
+    },
+    {
+      name: '--binary-path <string>',
+      description: 'Path relative to project root where pre-built .apk binary lives.',
     },
   ],
 };
