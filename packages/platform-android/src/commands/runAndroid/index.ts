@@ -14,6 +14,7 @@ import adb from './adb';
 import runOnAllDevices from './runOnAllDevices';
 import tryRunAdbReverse from './tryRunAdbReverse';
 import tryLaunchAppOnDevice from './tryLaunchAppOnDevice';
+import tryInstallAppOnDevice from './tryInstallAppOnDevice';
 import getAdbPath from './getAdbPath';
 import {
   isPackagerRunning,
@@ -51,15 +52,35 @@ export interface Flags {
   port: number;
   terminal: string;
   jetifier: boolean;
+  binaryPath?: string;
 }
 
-type AndroidProject = NonNullable<Config['project']['android']>;
+export type AndroidProject = NonNullable<Config['project']['android']>;
 
 /**
  * Starts the app on a connected Android emulator or device.
  */
 async function runAndroid(_argv: Array<string>, config: Config, args: Flags) {
   displayWarnings(config, args);
+
+  if (args.binaryPath) {
+    if (args.tasks) {
+      throw new CLIError(
+        'binary-path and tasks were specified, but they are not compatible. Specify only one',
+      );
+    }
+
+    args.binaryPath = path.isAbsolute(args.binaryPath)
+      ? args.binaryPath
+      : path.join(config.root, args.binaryPath);
+
+    if (!fs.existsSync(args.binaryPath)) {
+      throw new CLIError(
+        'binary-path was specified, but the file was not found.',
+      );
+    }
+  }
+
   const androidProject = getAndroidProject(config);
 
   if (args.jetifier) {
@@ -133,7 +154,10 @@ function runOnSpecificDevice(
   const {deviceId} = args;
   if (devices.length > 0 && deviceId) {
     if (devices.indexOf(deviceId) !== -1) {
-      buildApk(gradlew, androidProject.sourceDir);
+      if (!args.binaryPath) {
+        buildApk(gradlew, androidProject.sourceDir);
+      }
+
       installAndLaunchOnDevice(
         args,
         deviceId,
@@ -162,64 +186,6 @@ function buildApk(gradlew: string, sourceDir: string) {
   } catch (error) {
     throw new CLIError('Failed to build the app.', error);
   }
-}
-
-function tryInstallAppOnDevice(
-  args: Flags,
-  adbPath: string,
-  device: string,
-  androidProject: AndroidProject,
-) {
-  try {
-    // "app" is usually the default value for Android apps with only 1 app
-    const {appName, sourceDir} = androidProject;
-    const {appFolder} = args;
-    const variant = args.variant.toLowerCase();
-    const buildDirectory = `${sourceDir}/${appName}/build/outputs/apk/${variant}`;
-    const apkFile = getInstallApkName(
-      appFolder || appName, // TODO: remove appFolder
-      adbPath,
-      variant,
-      device,
-      buildDirectory,
-    );
-
-    const pathToApk = `${buildDirectory}/${apkFile}`;
-    const adbArgs = ['-s', device, 'install', '-r', '-d', pathToApk];
-    logger.info(`Installing the app on the device "${device}"...`);
-    logger.debug(
-      `Running command "cd android && adb -s ${device} install -r -d ${pathToApk}"`,
-    );
-    execa.sync(adbPath, adbArgs, {stdio: 'inherit'});
-  } catch (error) {
-    throw new CLIError('Failed to install the app on the device.', error);
-  }
-}
-
-function getInstallApkName(
-  appName: string,
-  adbPath: string,
-  variant: string,
-  device: string,
-  buildDirectory: string,
-) {
-  const availableCPUs = adb.getAvailableCPUs(adbPath, device);
-
-  // check if there is an apk file like app-armeabi-v7a-debug.apk
-  for (const availableCPU of availableCPUs.concat('universal')) {
-    const apkName = `${appName}-${availableCPU}-${variant}.apk`;
-    if (fs.existsSync(`${buildDirectory}/${apkName}`)) {
-      return apkName;
-    }
-  }
-
-  // check if there is a default file like app-debug.apk
-  const apkName = `${appName}-${variant}.apk`;
-  if (fs.existsSync(`${buildDirectory}/${apkName}`)) {
-    return apkName;
-  }
-
-  throw new CLIError('Could not find the correct install APK file.');
 }
 
 function installAndLaunchOnDevice(
@@ -379,6 +345,11 @@ export default {
       name: '--no-jetifier',
       description:
         'Do not run "jetifier" – the AndroidX transition tool. By default it runs before Gradle to ease working with libraries that don\'t support AndroidX yet. See more at: https://www.npmjs.com/package/jetifier.',
+    },
+    {
+      name: '--binary-path <string>',
+      description:
+        'Path relative to project root where pre-built .apk binary lives.',
     },
   ],
 };
