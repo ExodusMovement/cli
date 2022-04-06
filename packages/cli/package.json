@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@exodus/cli-debugger-ui": "^5.0.1-exodus.0",
-    "@exodus/cli-hermes": "^5.0.1-exodus.4",
+    "@exodus/cli-hermes": "^5.0.1-exodus.5",
     "@exodus/cli-server-api": "^5.0.1-exodus.0",
     "@react-native-community/cli-tools": "^5.0.1",
     "@react-native-community/cli-types": "^5.0.1",
