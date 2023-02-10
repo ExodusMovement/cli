@@ -8,8 +8,6 @@ import * as downloadAndUnzip from '../../downloadAndUnzip';
 import {EnvironmentInfo} from '../../../types';
 import * as tools from '@react-native-community/cli-tools';
 import * as common from '../common';
-import * as androidWinHelpers from '../../windows/androidWinHelpers';
-import * as environmentVariables from '../../windows/environmentVariables';
 
 const logSpy = jest.spyOn(common, 'logManualInstallation');
 const {logManualInstallation} = common;

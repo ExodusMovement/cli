@@ -11,7 +11,9 @@ async function getEnvironmentInfo(): Promise<EnvironmentInfo>;
 async function getEnvironmentInfo(json: true): Promise<EnvironmentInfo>;
 async function getEnvironmentInfo(json: false): Promise<string>;
 async function getEnvironmentInfo(): Promise<string | EnvironmentInfo> {
-  throw new Error('getEnvironmentInfo disabled by Exodus audit team due to security reasons')
+  throw new Error(
+    'getEnvironmentInfo disabled by Exodus audit team due to security reasons',
+  );
 }
 
 export default getEnvironmentInfo;
