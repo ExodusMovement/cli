@@ -1,5 +1,3 @@
-import {join} from 'path';
-
 import {HealthCheckInterface} from '../../types';
 
 export default {
