@@ -1,7 +1,5 @@
 async function upgrade() {
-  throw new Error(
-    'upgrade command disabled by Exodus audit team due to security reasons',
-  );
+  throw new Error('upgrade command disabled by Exodus audit team due to security reasons');
 }
 const upgradeCommand = {
   name: 'upgrade [version]',
