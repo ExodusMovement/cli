@@ -103,7 +103,7 @@ function loadConfig(projectRoot: string = findProjectRoot()): Config {
       let root =
         localDependencyRoot ||
         resolveNodeModuleDir(projectRoot, dependencyName);
-      let config = readDependencyConfigFromDisk(root, dependencyName);
+      let config = readDependencyConfigFromDisk(root);
 
       const isPlatform = Object.keys(config.platforms).length > 0;
 

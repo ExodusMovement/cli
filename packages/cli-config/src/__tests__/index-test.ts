@@ -211,7 +211,9 @@ test('should not skip packages that have invalid configuration (to avoid breakin
   expect(removeString(dependencies, DIR)).toMatchSnapshot(
     'dependencies config',
   );
-  expect(spy.mock.calls[0][0]).toMatchSnapshot('logged warning');
+  // Make error deterministic regardless of actual path
+  let error = spy.mock.calls[0][0].replace(/\([^)]+\)/, '(path)');
+  expect(error).toMatchSnapshot('logged warning');
 });
 
 test('does not use restricted "react-native" key to resolve config from package.json', () => {

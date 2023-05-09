@@ -1,6 +1,6 @@
 {
-  "name": "@react-native-community/cli-types",
-  "version": "10.0.0",
+  "name": "@exodus/cli-types",
+  "version": "10.0.0-exodus.1",
   "main": "build",
   "publishConfig": {
     "access": "public"
@@ -9,9 +9,7 @@
     "build",
     "!*.map"
   ],
-  "dependencies": {
-    "joi": "^17.2.1"
-  },
+  "dependencies": {},
   "types": "build/index.d.ts",
   "license": "MIT",
   "homepage": "https://github.com/react-native-community/cli/tree/master/packages/cli-types",
