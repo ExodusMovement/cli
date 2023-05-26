@@ -8,7 +8,7 @@
   },
   "types": "build/index.d.ts",
   "dependencies": {
-    "@exodus/cli-platform-android": "^5.0.1-exodus.5",
+    "@react-native-community/cli-platform-android": "^5.0.1",
     "@react-native-community/cli-tools": "^5.0.1",
     "chalk": "^3.0.0",
     "hermes-profile-transformer": "^0.0.6",
