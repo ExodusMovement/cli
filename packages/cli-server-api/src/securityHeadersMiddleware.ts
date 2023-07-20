@@ -26,10 +26,10 @@ export default function securityHeadersMiddleware(
     return;
   }
 
-  // Block requests to hosts other than localhost or 10.0.2.2 (EMULATOR_LOCALHOST)
+  // Block requests to hosts other than localhost|127.0.0.1|[::1], 10.0.2.2 (EMULATOR_LOCALHOST)
   if (
     typeof req.headers.host !== 'string' ||
-    !/^(localhost|10\.0\.2\.2):/.test(req.headers.host)
+    !/^(localhost|10\.0\.2\.2|127\.0\.0\.1|\[::1\]):/.test(req.headers.host)
   ) {
     return next(new Error('invalid hostname'));
   }
