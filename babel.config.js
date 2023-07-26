@@ -19,5 +19,5 @@ module.exports = {
   plugins: [
     [require.resolve('@babel/plugin-transform-modules-commonjs'), {lazy: true}],
   ],
-  sourceMaps: true,
+  sourceMaps: false,
 };
