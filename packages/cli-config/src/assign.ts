@@ -13,7 +13,7 @@ export default function assign(target: Object, ...sources: Object[]) {
         acc[key] = propertyDescriptor;
       }
       return acc;
-    }, {} as PropertyDescriptorMap);
+    }, Object.create(null) as PropertyDescriptorMap);
     // by default, Object.assign copies enumerable Symbols too
     Object.getOwnPropertySymbols(source).forEach((sym) => {
       let descriptor = Object.getOwnPropertyDescriptor(source, sym);
