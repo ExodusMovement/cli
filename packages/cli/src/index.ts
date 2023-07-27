@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import childProcess from 'child_process';
-import {Command as CommanderCommand} from 'commander';
+import {Command as CommanderCommand} from '@exodus/commander';
 import path from 'path';
 import {Command, Config} from '@react-native-community/cli-types';
 import {logger, CLIError} from '@react-native-community/cli-tools';
