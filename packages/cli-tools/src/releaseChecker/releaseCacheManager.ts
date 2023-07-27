@@ -13,7 +13,7 @@ function loadCache(name: string): Cache | undefined {
       path.resolve(getCacheRootPath(), name),
       'utf8',
     );
-    const cache = JSON.parse(cacheRaw);
+    const cache = Object.assign(Object.create(null), JSON.parse(cacheRaw));
     return cache;
   } catch (e) {
     if (e.code === 'ENOENT') {

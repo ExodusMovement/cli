@@ -23,7 +23,7 @@ export function pickValues<T>(
   names?: string[],
 ): Record<string, unknown> | undefined {
   const finalNames = names ?? keys;
-  const results: Record<string, unknown> = {};
+  const results: Record<string, unknown> = Object.create(null);
 
   let pickedValue = false;
   for (let index = 0; index < keys.length; ++index) {
