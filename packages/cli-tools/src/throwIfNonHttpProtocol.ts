@@ -6,15 +6,7 @@ export default function throwIfNonHttpProtocol(url: string) {
 
   const urlProtocol = _url.protocol;
 
-  const expectedProtocol = {
-    [urlProtocol]: false,
-    'http:': true,
-    'https:': true,
-  };
-
-  const isFromExpectedProtocol = expectedProtocol[urlProtocol];
-
-  if (!isFromExpectedProtocol) {
+  if (!['http:', 'https:'].includes(urlProtocol)) {
     throw new Error('invalid url, missing http/https protocol');
   }
 }
