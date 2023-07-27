@@ -120,8 +120,7 @@ export default function createEventsSocketEndpoint(
       // so there is no point in checking it security wise
       return (
         !origin ||
-        origin.startsWith('http://localhost:') ||
-        origin.startsWith('file:')
+        origin.startsWith('http://localhost:')
       );
     },
   });
