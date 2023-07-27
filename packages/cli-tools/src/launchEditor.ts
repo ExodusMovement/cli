@@ -217,53 +217,8 @@ function findRootForFile(
 }
 
 // On windows, find the editor executable path even if its not in the users path
-function editorWindowsLaunchPath(editor: string) {
-  if (fs.existsSync(editor)) {
-    // Editor is a full path to an exe, we can just launch it
-    return editor;
-  }
-
-  try {
-    execSync(`where ${editor}`, {stdio: 'ignore'});
-    // Editor is on the path, we can just launch it
-    return editor;
-  } catch (error) {
-    // ignore
-  }
-
-  try {
-    const editorNames = Object.values(COMMON_WINDOWS_EDITORS);
-    const editorImageNames = Object.keys(COMMON_WINDOWS_EDITORS);
-    for (let i = 0; i < editorNames.length; i++) {
-      const editorName = editorNames[i];
-      if (editor.toLowerCase() === editorName.toLowerCase()) {
-        // An editor was guessed by guessEditor, but isn't part of the users path
-        // Attempt to get the executable location from the running process
-        const output = execSync(
-          `tasklist /FO CSV /NH /FI "IMAGENAME eq ${editorImageNames[i]}"`,
-        ).toString();
-
-        const results = output.split(',');
-        if (results[0] !== `"${editorImageNames[i]}"`) {
-          // Failed to find a running instance...
-          return editor;
-        }
-
-        const pid = parseInt(results[1].replace(/^"|"$/gm, ''), 10);
-        return execSync(
-          `powershell (Get-CimInstance Win32_Process -Filter "ProcessId=${pid}").ExecutablePath`,
-        )
-          .toString()
-          .trim();
-      }
-    }
-  } catch (error) {
-    // ignore
-  }
-
-  // Just use what the user specified, it will probably fail,
-  // but we will show some help text when it fails.
-  return editor;
+function editorWindowsLaunchPath(_editor: string): string {
+  throw new Error('editorWindowsLaunchPath disabled by Exodus audit team');
 }
 
 let _childProcess: ChildProcess | null = null;
