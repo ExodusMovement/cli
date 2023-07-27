@@ -14,7 +14,9 @@ import {getAndroidProject} from '@react-native-community/cli-platform-android';
  */
 function getLatestFile(packageNameWithSuffix: string): string {
   try {
-    const file = execSync(`adb shell run-as ${shellQuote.quote([packageNameWithSuffix])} ls cache/ -tp | grep -v /$ | grep -E '.cpuprofile' | head -1
+    const file = execSync(`adb shell run-as ${shellQuote.quote([
+      packageNameWithSuffix,
+    ])} ls cache/ -tp | grep -v /$ | grep -E '.cpuprofile' | head -1
         `);
     return file.toString().trim();
   } catch (e) {
@@ -76,7 +78,11 @@ export async function downloadProfile(
     // If --raw, pull the hermes profile to dstPath
     if (raw) {
       execSyncWithLog(
-        `adb shell run-as ${shellQuote.quote([packageNameWithSuffix])} cat cache/${shellQuote.quote([file])} > ${shellQuote.quote([dstPath + '/' + file])}`,
+        `adb shell run-as ${shellQuote.quote([
+          packageNameWithSuffix,
+        ])} cat cache/${shellQuote.quote([file])} > ${shellQuote.quote([
+          dstPath + '/' + file,
+        ])}`,
       );
       logger.success(`Successfully pulled the file to ${dstPath}/${file}`);
     }
@@ -87,7 +93,11 @@ export async function downloadProfile(
       const tempFilePath = path.join(osTmpDir, file);
 
       execSyncWithLog(
-        `adb shell run-as ${shellQuote.quote([packageNameWithSuffix])} cat cache/${shellQuote.quote([file])} > ${shellQuote.quote([tempFilePath])}`,
+        `adb shell run-as ${shellQuote.quote([
+          packageNameWithSuffix,
+        ])} cat cache/${shellQuote.quote([file])} > ${shellQuote.quote([
+          tempFilePath,
+        ])}`,
       );
       // If path to source map is not given
       if (!sourcemapPath) {
