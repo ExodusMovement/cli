@@ -18,7 +18,6 @@ import {
 } from './template';
 import {changePlaceholderInTemplate} from './editTemplate';
 import * as PackageManager from '../../tools/packageManager';
-import {installPods} from '@react-native-community/cli-doctor';
 import banner from './banner';
 import TemplateAndVersionError from './errors/TemplateAndVersionError';
 
@@ -154,7 +153,6 @@ async function createFromTemplate({
 }
 
 async function installDependencies({
-  directory,
   npm,
   loader,
   root,
@@ -173,7 +171,7 @@ async function installDependencies({
   });
 
   if (process.platform === 'darwin') {
-    await installPods({directory, loader});
+    throw new Error('cli-doctor disabled by Exodus security team');
   }
 
   loader.succeed();
