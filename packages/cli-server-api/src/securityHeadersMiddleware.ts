@@ -12,11 +12,10 @@ export default function securityHeadersMiddleware(
   next: (err?: any) => void,
 ) {
   // Block any cross origin request.
-  if (typeof req.headers.origin !== 'string') {
-    next(new Error('Missing Origin header in the request'));
-    return;
-  }
-  if (!req.headers.origin.match(/^https?:\/\/localhost:/)) {
+  if (
+    typeof req.headers.origin === 'string' &&
+    !req.headers.origin.match(/^https?:\/\/localhost:/)
+  ) {
     next(
       new Error(
         'Unauthorized request from ' +
