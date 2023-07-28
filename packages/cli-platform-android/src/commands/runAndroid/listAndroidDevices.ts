@@ -1,4 +1,4 @@
-import {execSync} from 'child_process';
+import {execFileSync} from 'child_process';
 import adb from './adb';
 import getAdbPath from './getAdbPath';
 import {getEmulators} from './tryLaunchEmulator';
@@ -22,7 +22,7 @@ type DeviceData = {
  */
 function getEmulatorName(deviceId: string) {
   const adbPath = getAdbPath();
-  const buffer = execSync(`${adbPath} -s ${deviceId} emu avd name`);
+  const buffer = execFileSync(adbPath, ['-s', deviceId, 'emu', 'avd', 'name']);
 
   // 1st line should get us emu name
   return buffer
@@ -39,11 +39,12 @@ function getEmulatorName(deviceId: string) {
  */
 function getPhoneName(deviceId: string) {
   const adbPath = getAdbPath();
-  const buffer = execSync(
-    `${adbPath} -s ${deviceId} shell getprop | grep ro.product.model`,
-  );
+  const buffer = execFileSync(adbPath, ['-s', deviceId, 'shell', 'getprop']);
   return buffer
     .toString()
+    .split('\n')
+    .filter((line) => line.indexOf('ro.product.model') !== -1)
+    .join('\n')
     .replace(/\[ro\.product\.model\]:\s*\[(.*)\]/, '$1')
     .trim();
 }

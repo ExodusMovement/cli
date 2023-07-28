@@ -16,6 +16,9 @@ export function startServerInNewWindow(
     ? 'launchPackager.bat'
     : 'launchPackager.command';
   const packagerEnvFilename = isWindows ? '.packager.bat' : '.packager.env';
+  if (typeof port !== 'number') {
+    throw new Error('expected port to be a number');
+  }
   const portExportContent = isWindows
     ? `set RCT_METRO_PORT=${port}`
     : `export RCT_METRO_PORT=${port}`;
