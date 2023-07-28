@@ -1,6 +1,6 @@
 {
   "name": "@exodus/react-native-community-cli",
-  "version": "10.1.3-exodus.6",
+  "version": "10.1.3-exodus.7",
   "description": "React Native CLI",
   "license": "MIT",
   "main": "build/index.js",
