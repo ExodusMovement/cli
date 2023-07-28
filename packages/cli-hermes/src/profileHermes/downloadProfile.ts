@@ -1,11 +1,10 @@
 import {Config} from '@react-native-community/cli-types';
-import {execSync} from 'child_process';
+import {execFileSync} from 'child_process';
 import {logger, CLIError} from '@react-native-community/cli-tools';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import transformer from 'hermes-profile-transformer';
-import shellQuote from 'shell-quote';
 import {findSourcemap, generateSourcemap} from './sourcemapUtils';
 import {getAndroidProject} from '@react-native-community/cli-platform-android';
 /**
@@ -14,19 +13,23 @@ import {getAndroidProject} from '@react-native-community/cli-platform-android';
  */
 function getLatestFile(packageNameWithSuffix: string): string {
   try {
-    const file = execSync(`adb shell run-as ${shellQuote.quote([
+    const file = execFileSync('adb', [
+      'shell',
+      'run-as',
       packageNameWithSuffix,
-    ])} ls cache/ -tp | grep -v /$ | grep -E '.cpuprofile' | head -1
-        `);
+      'sh',
+      '-c',
+      "ls cache/ -tp | grep -v /$ | grep -E '.cpuprofile' | head -1",
+    ]);
     return file.toString().trim();
   } catch (e) {
     throw new Error(e);
   }
 }
 
-function execSyncWithLog(command: string) {
+function execFileSyncWithLog(command: string, args: string[]) {
   logger.debug(`${command}`);
-  return execSync(command);
+  return execFileSync(command, args);
 }
 
 /**
@@ -77,13 +80,14 @@ export async function downloadProfile(
 
     // If --raw, pull the hermes profile to dstPath
     if (raw) {
-      execSyncWithLog(
-        `adb shell run-as ${shellQuote.quote([
-          packageNameWithSuffix,
-        ])} cat cache/${shellQuote.quote([file])} > ${shellQuote.quote([
-          dstPath + '/' + file,
-        ])}`,
-      );
+      const output = execFileSyncWithLog('adb', [
+        'shell',
+        'run-as',
+        packageNameWithSuffix,
+        'cat',
+        `cache/${file}`,
+      ]);
+      fs.writeFileSync(`${dstPath}/${file}`, output);
       logger.success(`Successfully pulled the file to ${dstPath}/${file}`);
     }
 
@@ -92,13 +96,14 @@ export async function downloadProfile(
       const osTmpDir = os.tmpdir();
       const tempFilePath = path.join(osTmpDir, file);
 
-      execSyncWithLog(
-        `adb shell run-as ${shellQuote.quote([
-          packageNameWithSuffix,
-        ])} cat cache/${shellQuote.quote([file])} > ${shellQuote.quote([
-          tempFilePath,
-        ])}`,
-      );
+      const output = execFileSyncWithLog('adb', [
+        'shell',
+        'run-as',
+        packageNameWithSuffix,
+        'cat',
+        `cache/${file}`,
+      ]);
+      fs.writeFileSync(tempFilePath, output);
       // If path to source map is not given
       if (!sourcemapPath) {
         // Get or generate the source map
