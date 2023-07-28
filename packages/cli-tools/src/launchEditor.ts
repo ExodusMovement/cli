@@ -11,7 +11,6 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import {execSync, spawn, ChildProcess} from 'child_process';
-import shellQuote from 'shell-quote';
 import logger from './logger';
 
 function isTerminalEditor(editor: string) {
@@ -125,7 +124,7 @@ function getArgumentsForFileName(
 function guessEditor() {
   // Explicit config always wins
   if (process.env.REACT_EDITOR) {
-    return shellQuote.parse(process.env.REACT_EDITOR) as string[];
+    return [process.env.REACT_EDITOR] as string[];
   }
 
   try {
